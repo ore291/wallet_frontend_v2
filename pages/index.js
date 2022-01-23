@@ -18,9 +18,11 @@ export default function Home() {
       let user = async function fetchData() {
         // You can await here
         await userService.getUser(id, token);
+
+        setUser(user.data);
+
+        setShowModal(!user.data.is_verified);
       };
-      setUser(user.data);
-      setShowModal(!user.data.is_verified);
     }
   }, []);
 
