@@ -22,7 +22,7 @@ export default function Home() {
     if (item) {
       let id = item.data.user.id;
       let token = item.data.tokens.access.token;
-      fetchData(id, token)
+      fetchData(id, token);
     }
   }, []);
 
