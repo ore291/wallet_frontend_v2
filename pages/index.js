@@ -17,7 +17,7 @@ export default function Home() {
       setUser(userDetails.data);
       setShowModal(!userDetails.data.is_verified);
     }else{
-      setUser(data);
+      userService.logout()
     }
    
   };

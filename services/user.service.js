@@ -10,16 +10,18 @@ const userSubject = new BehaviorSubject(
   process.browser && JSON.parse(localStorage.getItem("user"))
 );
 
-const refreshAuthLogic = (failedRequest) =>
-  axios
-    .post(`${baseUrl}/auth/refresh-tokens`, {
-      refreshToken: userSubject.value.data.tokens.refresh.token,
-    })
-    .then((tokenRefreshResponse) => {
-      failedRequest.response.config.headers["Authorization"] =
-        "Bearer " + tokenRefreshResponse.data.access.token;
-      return Promise.resolve();
-    });
+const refreshAuthLogic = async (failedRequest) =>
+  {
+    return await axios
+      .post(`${baseUrl}/auth/refresh-tokens`,  {
+        refreshToken: userSubject.value.data.tokens.refresh.token,
+      })
+      .then((tokenRefreshResponse) => {
+        failedRequest.response.config.headers["Authorization"] =
+          "Bearer " + tokenRefreshResponse.data.access.token;
+        return Promise.resolve();
+      });
+  };
 
 // Instantiate the interceptor
 createAuthRefreshInterceptor(axios, refreshAuthLogic);
@@ -97,6 +99,10 @@ async function getUser(id, token) {
 
 function logout() {
   // remove user from local storage, publish null to user subscribers and redirect to login page
+  axios
+    .post(`${baseUrl}/auth/logout`, {
+      refreshToken: userSubject.value.data.tokens.refresh.token,
+    })
   localStorage.removeItem("user");
   userSubject.next(null);
   Router.push("/login");
