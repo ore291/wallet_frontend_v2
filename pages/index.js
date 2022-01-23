@@ -15,12 +15,12 @@ export default function Home() {
     if (item) {
       let id = item.data.user.id;
       let token = item.data.tokens.access.token;
-      async function fetchData() {
+      let user = async function fetchData() {
         // You can await here
-        let user = await userService.getUser(id, token);
-        setUser(user.data);
-        setShowModal(!user.data.is_verified);
-      }
+        await userService.getUser(id, token);
+      };
+      setUser(user.data);
+      setShowModal(!user.data.is_verified);
     }
   }, []);
 
