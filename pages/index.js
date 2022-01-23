@@ -58,29 +58,29 @@ export default function Home() {
           show={showModal}
           title="VERIFY YOUR ACCOUNT"
         />
-        <div classNameName="container p-10">
-          <div classNameName="flex items-center justify-between">
-            <div classNameName="flex flex-col justify-center  space-x-1">
-              <h1 classNameName="text-4xl font-extrabold">HOME</h1>
-              <p classNameName="text-xl font-semibold">
+        <div className="container p-10">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col justify-center  space-x-1">
+              <h1 className="text-4xl font-extrabold">HOME</h1>
+              <p className="text-xl font-semibold">
                 welcome back {user && user.name}{" "}
               </p>
             </div>
             <div>
               <Link href="/deposit">
-                <div classNameName="rounded-lg py-2 px-6 bg-orange-400 hover:bg-orange-700 border mr-10 cursor-pointer">
-                  <span classNameName="font-bold ">Fund Balance</span>
+                <div className="rounded-lg py-2 px-6 bg-orange-400 hover:bg-orange-700 border mr-10 cursor-pointer">
+                  <span className="font-bold ">Fund Balance</span>
                 </div>
               </Link>
             </div>
             {/* end of balance */}
           </div>
-          <div classNameName="grid grid-cols-3 gap-x-10 mt-5">
-            <div classNameName="flex flex-col">
-              <div classNameName="flex flex-col p-3 bg-white rounded-lg shadow-xl">
+          <div className="grid grid-cols-3 gap-x-10 mt-5">
+            <div className="flex flex-col">
+              <div className="flex flex-col p-3 bg-white rounded-lg shadow-xl">
                 <h1>Your Balance</h1>
-                <span classNameName="my-5 text-4xl font-semibold flex">
-                  <del classNameName="mr-1">&#8358;</del>
+                <span className="my-5 text-4xl font-semibold flex">
+                  <del className="mr-1">&#8358;</del>
                   <p>
                     {user
                       ? new Intl.NumberFormat("en-IN", {
@@ -90,34 +90,34 @@ export default function Home() {
                   </p>
                 </span>
                 <Link href="/deposit">
-                  <p classNameName="text-orange-500">Fund Balance</p>
+                  <p className="text-orange-500">Fund Balance</p>
                 </Link>
               </div>
 
-              <div classNameName="flex flex-col mt-5 p-5 bg-white rounded-lg shadow-xl">
-                <div classNameName="flex justify-between">
+              <div className="flex flex-col mt-5 p-5 bg-white rounded-lg shadow-xl">
+                <div className="flex justify-between">
                   <h1>Spendings</h1>
                   <p>This month</p>
                 </div>
-                <div classNameName="flex mt-2 justify-between">
+                <div className="flex mt-2 justify-between">
                   <h1>Total Money Received</h1>
-                  <span classNameName="flex text-green-500">
-                    <del classNameName="mr-1">&#8358;</del>
+                  <span className="flex text-green-500">
+                    <del className="mr-1">&#8358;</del>
                     <p>0.00</p>
                   </span>
                 </div>
-                <div classNameName="flex mt-2 justify-between">
+                <div className="flex mt-2 justify-between">
                   <h1>Total Money Spent</h1>
-                  <span classNameName="flex text-red-500">
-                    <del classNameName="mr-1">&#8358;</del>
+                  <span className="flex text-red-500">
+                    <del className="mr-1">&#8358;</del>
                     <p>0.00</p>
                   </span>
                 </div>
               </div>
             </div>
-            <div classNameName="col-span-2">
+            <div className="col-span-2">
               <h1>Transactions</h1>
-              <div classNameName="emptyTransaction"></div>
+              <div className="emptyTransaction"></div>
             </div>
           </div>
         </div>
