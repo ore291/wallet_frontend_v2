@@ -8,6 +8,21 @@ function MyApp({ Component, pageProps }) {
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
 
+  function authCheck(url) {
+    // redirect to login page if accessing a private page and not logged in
+    const publicPaths = ["/login", "/register"];
+    const path = url.split("?")[0];
+    if (!userService.userValue && !publicPaths.includes(path)) {
+      setAuthorized(false);
+      router.push({
+        pathname: "/login",
+        query: { returnUrl: router.asPath },
+      });
+    } else {
+      setAuthorized(true);
+    }
+  }
+
   useEffect(() => {
     // run auth check on initial load
     authCheck(router.asPath);
@@ -26,20 +41,7 @@ function MyApp({ Component, pageProps }) {
     };
   }, []);
 
-  function authCheck(url) {
-    // redirect to login page if accessing a private page and not logged in
-    const publicPaths = ["/login", "/register"];
-    const path = url.split("?")[0];
-    if (!userService.userValue && !publicPaths.includes(path)) {
-      setAuthorized(false);
-      router.push({
-        pathname: "/login",
-        query: { returnUrl: router.asPath },
-      });
-    } else {
-      setAuthorized(true);
-    }
-  }
+  
 
   if (router.pathname.startsWith("/login") || router.pathname.startsWith("/register")) {
     return (
