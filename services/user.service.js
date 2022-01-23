@@ -2,6 +2,7 @@ import { BehaviorSubject } from "rxjs";
 import getConfig from "next/config";
 import Router from "next/router";
 import axios from "axios";
+import createAuthRefreshInterceptor from "axios-auth-refresh";
 
 const { publicRuntimeConfig } = getConfig();
 const baseUrl = `${publicRuntimeConfig.apiUrl}`;
@@ -9,9 +10,19 @@ const userSubject = new BehaviorSubject(
   process.browser && JSON.parse(localStorage.getItem("user"))
 );
 
+const refreshAuthLogic = (failedRequest) =>
+  axios
+    .post(`${baseUrl}/auth/refresh-tokens`, {
+      refreshToken: userSubject.value.data.tokens.refresh.token,
+    })
+    .then((tokenRefreshResponse) => {
+      failedRequest.response.config.headers["Authorization"] =
+        "Bearer " + tokenRefreshResponse.data.access.token;
+      return Promise.resolve();
+    });
 
-
-
+// Instantiate the interceptor
+createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
 export const userService = {
   user: userSubject.asObservable(),
@@ -25,7 +36,7 @@ export const userService = {
   transferBalance,
   withdrawBalance,
   verifyKyc,
-  register
+  register,
 };
 
 async function login(email, password) {
@@ -37,7 +48,11 @@ async function login(email, password) {
 }
 
 async function register(name, email, password) {
-  const user = await axios.post(`${baseUrl}/auth/register`, {name,  email, password });
+  const user = await axios.post(`${baseUrl}/auth/register`, {
+    name,
+    email,
+    password,
+  });
   // publish user to subscribers and store in local storage to stay logged in between page refreshes
   return user;
 }
@@ -60,19 +75,24 @@ async function withdrawBalance(amount, password, id) {
 }
 
 async function transferBalance(amount, password, id, rec_email) {
-  const res = await axios.post(`${baseUrl}/transfer`, { amount, password, id, rec_email });
+  const res = await axios.post(`${baseUrl}/transfer`, {
+    amount,
+    password,
+    id,
+    rec_email,
+  });
 
   return res;
 }
 async function getUser(id, token) {
-try {
-    const res = await axios.get(`${baseUrl}/users/${id}`, 
-    { headers: {"Authorization" : `Bearer ${token}`} });
+  try {
+    const res = await axios.get(`${baseUrl}/users/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return res;
-} catch (error) {
-  console.log(error);
-}
-  
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function logout() {
