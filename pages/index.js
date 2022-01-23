@@ -10,19 +10,25 @@ export default function Home() {
   const [user, setUser] = useState();
   const [showModal, setShowModal] = useState(false);
 
-  async function fetchData(id, token) {
+  async function fetchData(id, token, data) {
     // You can await here
-    const user = await userService.getUser(id, token);
-    setUser(user.data);
-    setShowModal(!user.data.is_verified);
+    const userDetails = await userService.getUser(id, token);
+    if(userDetails){
+      setUser(userDetails.data);
+      setShowModal(!userDetails.data.is_verified);
+    }else{
+      setUser(data);
+    }
+   
   };
 
   useEffect(() => {
     let item = JSON.parse(localStorage.getItem("user"));
     if (item) {
+      let data = item.data
       let id = item.data.user.id;
       let token = item.data.tokens.access.token;
-      fetchData(id, token);
+      fetchData(id, token, data);
     }
   }, []);
 
