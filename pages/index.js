@@ -10,34 +10,42 @@ export default function Home() {
   const [user, setUser] = useState();
   const [showModal, setShowModal] = useState(false);
 
-  async function fetchData(id, token, data) {
+  async function fetchData(id, token) {
     // You can await here
-    const userDetails = await userService.getUser(id, token);
-    if(userDetails){
+
+    try {
+      const userDetails = await userService.getUser(id, token);
       setUser(userDetails.data);
       setShowModal(!userDetails.data.is_verified);
-    }else{
-      userService.logout()
+
+     
+
+    } catch (error) {
+      console.log(error);
     }
-   
-  };
+
+    // if (userDetails) {
+    // } else {
+      
+    //   userService.logout();
+    // }
+  }
 
   useEffect(() => {
-    let item = JSON.parse(localStorage.getItem("user"));
-    if (item) {
-      let data = item.data
-      let id = item.data.user.id;
-      let token = item.data.tokens.access.token;
-      fetchData(id, token, data);
+    let user = JSON.parse(localStorage.getItem("user"));
+    let tokens = JSON.parse(localStorage.getItem("tokens"));
+
+    if (user) {
+      let id = user.data.user.id;
+      let token = tokens.access.token;
+      fetchData(id, token);
     }
   }, []);
 
   if (!user)
     return (
       <div>
-        <div
-          className="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center"
-        >
+        <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 opacity-75 flex flex-col items-center justify-center">
           <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12 mb-4"></div>
           <h2 className="text-center text-white text-xl font-semibold">
             Loading...

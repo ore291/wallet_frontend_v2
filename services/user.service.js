@@ -9,25 +9,32 @@ const baseUrl = `${publicRuntimeConfig.apiUrl}`;
 const userSubject = new BehaviorSubject(
   process.browser && JSON.parse(localStorage.getItem("user"))
 );
+const tokenSubject = new BehaviorSubject(
+  process.browser && JSON.parse(localStorage.getItem("tokens"))
+);
 
-const refreshAuthLogic = async (failedRequest) =>
-  {
-    return await axios
-      .post(`${baseUrl}/auth/refresh-tokens`,  {
-        refreshToken: userSubject.value.data.tokens.refresh.token,
-      })
-      .then((tokenRefreshResponse) => {
-        failedRequest.response.config.headers["Authorization"] =
-          "Bearer " + tokenRefreshResponse.data.access.token;
-        return Promise.resolve();
-      });
-  };
+const refreshAuthLogic = async (failedRequest) => {
+  return await axios
+    .post(`${baseUrl}/auth/refresh-tokens`, {
+      refreshToken: tokenSubject.value.refresh.token,
+    })
+    .then((tokenRefreshResponse) => {
+      localStorage.setItem("tokens", JSON.stringify(tokenRefreshResponse.data));
+      failedRequest.response.config.headers["Authorization"] =
+        "Bearer " + tokenRefreshResponse.data.access.token;
+      return Promise.resolve();
+    });
+};
 
 // Instantiate the interceptor
 createAuthRefreshInterceptor(axios, refreshAuthLogic);
 
 export const userService = {
   user: userSubject.asObservable(),
+  tokens: tokenSubject.asObservable(),
+  get tokensValue(){
+    return tokenSubject.value;
+  },
   get userValue() {
     return userSubject.value;
   },
@@ -46,6 +53,7 @@ async function login(email, password) {
   // publish user to subscribers and store in local storage to stay logged in between page refreshes
   userSubject.next(user);
   localStorage.setItem("user", JSON.stringify(user));
+  localStorage.setItem("tokens", JSON.stringify(user.data.tokens));
   return user;
 }
 
@@ -88,21 +96,20 @@ async function transferBalance(amount, password, id, rec_email) {
 }
 async function getUser(id, token) {
   try {
-    const res = await axios.get(`${baseUrl}/users/${id}`, {
+    const user = await axios.get(`${baseUrl}/users/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res;
+    return user;
   } catch (error) {
-    console.log(error);
+    
   }
 }
 
 function logout() {
   // remove user from local storage, publish null to user subscribers and redirect to login page
-  axios
-    .post(`${baseUrl}/auth/logout`, {
-      refreshToken: userSubject.value.data.tokens.refresh.token,
-    })
+  axios.post(`${baseUrl}/auth/logout`, {
+    refreshToken: userSubject.value.data.tokens.refresh.token,
+  });
   localStorage.removeItem("user");
   userSubject.next(null);
   Router.push("/login");
